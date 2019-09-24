@@ -25,11 +25,8 @@ public class BDDispatcherServlet extends HttpServlet {
 
     //大写字母
     private final static String[] digits = {
-            "A", "B", "C", "D", "E", "F",
-            "G", "H", "I", "J", "K", "L",
-            "M", "N", "O", "P", "Q", "R",
-            "S", "T", "U", "V", "W", "X",
-            "Y", "Z"
+            "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
+            "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"
     };
 
     private static Properties properties = new Properties();
@@ -55,7 +52,6 @@ public class BDDispatcherServlet extends HttpServlet {
         doDependancyInjection();
         //初始化Handlermapping
         initHandlermapping();
-
     }
 
     @Override
@@ -71,7 +67,6 @@ public class BDDispatcherServlet extends HttpServlet {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     private void doDispatch(HttpServletRequest req, HttpServletResponse resp) throws Exception {
@@ -88,18 +83,15 @@ public class BDDispatcherServlet extends HttpServlet {
             resp.getWriter().write("{\"code\":404, \"msg\":\"未找到请求资源\"}");
             return;
         }
-        //handlermapping获取对应的方法等
+        //handlermapping获取对应的方法,controller等
         Method method = handlermapping.getMethod();
         Object controller = handlermapping.getController();
         Map<String, Integer> paramSortMap = handlermapping.getParamSortMap();
         Class<?>[] parameterTypes = handlermapping.getParameterTypes();
-
         //request获取参数
         Map<String, String[]> parameterMap = req.getParameterMap();
-
         //方法invoke的实参
         Object[] args = new Object[parameterTypes.length];
-
         //请求参数
         for (Map.Entry<String, String[]> entry : parameterMap.entrySet()) {
             String key = entry.getKey();
@@ -121,7 +113,6 @@ public class BDDispatcherServlet extends HttpServlet {
             args[paramSortMap.get(servletResponseTypeName)] = resp;
         }
         //形参是否有......
-
 
         //执行目标方法
         Object invoke = method.invoke(controller, args);
@@ -156,9 +147,7 @@ public class BDDispatcherServlet extends HttpServlet {
                     Object singleton = entry.getValue();
                     Class<?> clazz = singleton.getClass();
                     //有没有@BDController
-                    if (!clazz.isAnnotationPresent(BDController.class)) {
-                        continue;
-                    }
+                    if (!clazz.isAnnotationPresent(BDController.class)) {continue;}
                     //提取baseUrl
                     String baseUrl = "";
                     if (clazz.isAnnotationPresent(BDRequestMapping.class)) {
@@ -168,12 +157,10 @@ public class BDDispatcherServlet extends HttpServlet {
                     }
                     doAddHandlermapping(clazz, singleton, baseUrl);
                 }
-
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-
     }
 
     private void doAddHandlermapping(Class<?> clazz, Object singleton, String baseUrl) {
@@ -184,7 +171,6 @@ public class BDDispatcherServlet extends HttpServlet {
             BDRequestMapping bdRequestMapping = method.getAnnotation(BDRequestMapping.class);
             String value = bdRequestMapping.value();
             baseUrl = "".equals(value) ? baseUrl : baseUrl + ("/" + value).replaceAll("//", "/");
-
             Map<String, Integer> paramSortMap = new HashMap<>(16);
             Class<?>[] parameterTypes = method.getParameterTypes();
             //method参数上的注解
@@ -262,7 +248,7 @@ public class BDDispatcherServlet extends HttpServlet {
                     }
                     value = toLowercase(clazz.getSimpleName());
                     ioc.put(value, instance);
-
+                    //处理实现的接口
                     Class<?>[] clazzInterfaces = clazz.getInterfaces();
                     for (Class<?> clazzInterface : clazzInterfaces) {
                         String iName = toLowercase(clazzInterface.getSimpleName());
@@ -290,9 +276,7 @@ public class BDDispatcherServlet extends HttpServlet {
                     if (f.isDirectory()) {
                         doClassScanner(packageName + "." + f.getName());
                     } else {
-                        if (!f.getName().endsWith(".class")) {
-                            continue;
-                        }
+                        if (!f.getName().endsWith(".class")) {continue;}
                         classPath.add(packageName + "." + f.getName().replace(".class", ""));
                     }
                 }
