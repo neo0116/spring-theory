@@ -76,6 +76,8 @@ public class BDDispatcherServlet extends HttpServlet {
 
     private void doDispatch(HttpServletRequest req, HttpServletResponse resp) throws Exception {
         req.setCharacterEncoding("utf-8");
+        resp.setHeader("Content-type", "text/html;charset=utf-8");
+        resp.setCharacterEncoding("utf-8");
         //uri
         String requestURI = req.getRequestURI();
         //项目路径
@@ -83,7 +85,7 @@ public class BDDispatcherServlet extends HttpServlet {
         String url = requestURI.replace(servletPath, "");
         Handlermapping handlermapping = handlermappings.get(url);
         if (handlermapping == null) {
-            resp.getWriter().write("{code:404,msg:'未找到请求资源'}");
+            resp.getWriter().write("{\"code\":404, \"msg\":\"未找到请求资源\"}");
             return;
         }
         //handlermapping获取对应的方法等
@@ -124,8 +126,6 @@ public class BDDispatcherServlet extends HttpServlet {
         //执行目标方法
         Object invoke = method.invoke(controller, args);
 
-        resp.setHeader("Content-type", "text/html;charset=utf-8");
-        resp.setCharacterEncoding("utf-8");
         resp.getWriter().write(invoke.toString());
     }
 
