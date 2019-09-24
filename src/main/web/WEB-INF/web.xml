@@ -7,7 +7,7 @@
     <display-name>BD Web Application</display-name>
     <servlet>
         <servlet-name>BD</servlet-name>
-        <servlet-class>com.byteDance.spring.BDDispatcherServlet</servlet-class>
+        <servlet-class>com.byteDance.spring.servlet.BDDispatcherServlet</servlet-class>
         <init-param>
             <param-name>contextConfigLocation</param-name>
             <param-value>classpath:application.properties</param-value>
